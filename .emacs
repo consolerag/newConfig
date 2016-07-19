@@ -7,6 +7,20 @@
 (xterm-mouse-mode 1)
 (scroll-bar-mode -1)
 ;;(global-linum-mode 0)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(battery-mode-line-format " %p" t)
+ '(custom-safe-themes
+   (quote
+    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "9cb6358979981949d1ae9da907a5d38fb6cde1776e8956a1db150925f2dad6c1" default)))
+ '(erc-track-position-in-mode-line t t)
+ '(linum-format (quote linum-relative))
+ '(linum-relative-format "%3s   ")
+ '(markdown-command "/usr/bin/pandoc")
+ '(web-mode-enable-current-element-highlight t))
 (setq backup-directory-alist
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
@@ -21,10 +35,10 @@
 (global-set-key(kbd "<f9>") 'backward-kill-word)
 (global-unset-key(kbd "M-:"))
 (key-chord-define-global "2~" 'backward-kill-word)
-(require 'multiple-cursors)
-(key-chord-define-global "mm" 'mc/mark-next-like-this)
-(key-chord-define-global "MM" 'mc/mark-previous-like-this)
-(key-chord-define-global "MA" 'mc/mark-all-like-this)
+(require 'evil-multiedit)
+;;(key-chord-define-global "MA" 'mc/mark-next-like-this)
+;;(key-chord-define-global "MM" 'mc/mark-previous-like-this)
+(key-chord-define-global "MA" 'evil-multiedit-match-all)
 ;;(key-chord-define-global "mp" 'evil-mc-pause-cursors)
 ;;(key-chord-define-global "mx" 'evil-mc-undo-all-cursors)
 ;;(key-chord-define-global "mr" 'evil-mc-resume-cursors)
@@ -194,6 +208,27 @@
 (add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.scss?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.js?\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx?\\'" . js2-jsx-mode))
+(setq js2-strict-missing-semi-warning nil)
+(setq js2-include-node-externs t)
+(require 'flycheck)
+(require 'js2-mode)
+
+
+(setq js2-mode-show-parse-errors nil)
+(setq js2-mode-show-strict-warnings nil)
+
+;; Disable JSCS linting (optional but if you're using ESLint you probably don't
+;; need this).
+(let ((checkers (get 'javascript-eslint 'flycheck-next-checkers)))
+  (put 'javascript-eslint 'flycheck-next-checkers
+       (remove '(warning . javascript-jscs) checkers)))
+
+(defun setup-js2-mode ()
+  (flycheck-select-checker 'javascript-eslint)
+  (flycheck-mode))
+
+(add-hook 'js2-mode-hook #'setup-js2-mode)
 (require 'enh-ruby-mode)
 (add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
 (add-to-list 'interpreter-mode-alist '("ruby" . enh-ruby-mode))
@@ -239,6 +274,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "unspecified-bg" :foreground "#ffffff" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
+ '(diredp-dir-name ((t (:background "black" :foreground "green"))))
  '(font-lock-builtin-face ((t (:foreground "brightred"))))
  '(font-lock-comment-face ((t (:foreground "brightblack"))))
  '(font-lock-constant-face ((t (:foreground "brightred"))))
@@ -247,7 +283,10 @@
  '(font-lock-string-face ((t (:foreground "#ffffff"))))
  '(font-lock-variable-name-face ((t (:foreground "brightcyan"))))
  '(highlight ((t (:background "#fff"))))
+ '(highlight-indent-guides-even-face ((t (:background "color-232"))))
+ '(highlight-indent-guides-odd-face ((t (:background "color-233"))))
  '(hl-line ((t (:inherit highlight :background "black"))))
+ '(iedit-occurrence ((t (:background "blue"))))
  '(js2-external-variable ((t (:foreground "brightblue"))))
  '(js2-function-call ((t (:inherit default :foreground "green"))))
  '(js2-function-param ((t (:foreground "magenta"))))
@@ -257,7 +296,7 @@
  '(region ((t (:background "blue"))))
  '(web-mode-constant-face ((t (:inherit font-lock-constant-face :foreground "brightred"))))
  '(web-mode-css-property-name-face ((t (:inherit font-lock-variable-name-face :foreground "#FFD700"))))
- '(web-mode-current-element-highlight-face ((t (:background "#ffffff" :foreground "black"))))
+ '(web-mode-current-element-highlight-face ((t (:background "#FFD700" :foreground "black"))))
  '(web-mode-function-call-face ((t (:inherit font-lock-function-name-face :foreground "brightcyan"))))
  '(web-mode-function-name-face ((t (:inherit font-lock-function-name-face :foreground "brightcyan"))))
  '(web-mode-html-attr-value-face ((t (:inherit font-lock-string-face :foreground "brightcyan"))))
@@ -267,16 +306,4 @@
  '(web-mode-symbol-face ((t (:foreground "black"))))
  '(web-mode-variable-name-face ((t (:inherit font-lock-variable-name-face :foreground "#ffd700")))))
 (put 'dired-find-alternate-file 'disabled nil)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(battery-mode-line-format " %p" t)
- '(custom-safe-themes
-   (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "9cb6358979981949d1ae9da907a5d38fb6cde1776e8956a1db150925f2dad6c1" default)))
- '(erc-track-position-in-mode-line t t)
- '(linum-format (quote linum-relative))
- '(linum-relative-format "%3s   ")
- '(web-mode-enable-current-element-highlight t))
+
