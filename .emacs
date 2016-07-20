@@ -89,6 +89,8 @@
 (evil-define-key 'normal dired-mode-map "n" 'evil-search-next)
 (evil-define-key 'normal dired-mode-map "N" 'evil-search-previous)
 (evil-define-key 'normal dired-mode-map "q" 'kill-this-buffer)
+(require 'evil-surround)
+(global-evil-surround-mode 1)
 (defun my-dired-up-directory ()
   (interactive)
   (let ((old (current-buffer)))
